@@ -57,3 +57,105 @@
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
             <div class="glass-card p-6 text-center">
                 <h4 class="text-xs font-bold text-slate-500 uppercase tracking-tighter">NAF Score</h4>
+                <div class="chart-container"><canvas id="nafChart"></canvas></div>
+            </div>
+            <div class="glass-card p-6 text-center">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-tighter">แยกตามหอผู้ป่วย</h4>
+                <div class="chart-container"><canvas id="wardChart"></canvas></div>
+            </div>
+            <div class="glass-card p-6 text-center">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-tighter">ค่า BMI</h4>
+                <div class="chart-container"><canvas id="bmiChart"></canvas></div>
+            </div>
+            <div class="glass-card p-6 text-center">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Albumin</h4>
+                <div class="chart-container"><canvas id="albChart"></canvas></div>
+            </div>
+            <div class="glass-card p-6 text-center">
+                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-tighter">Total Protein</h4>
+                <div class="chart-container"><canvas id="proChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
+
+        async function initDashboard() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL);
+                const result = await response.json();
+                if (result.status !== 'success') return;
+                const data = result.data;
+
+                // อัปเดต Stats และเวลา
+                document.getElementById('total-pts').innerText = data.length;
+                document.getElementById('followed-pts').innerText = data.filter(d => d.IS_FOLLOWED === 'ติดตามแล้ว').length;
+                document.getElementById('pending-pts').innerText = data.filter(d => d.IS_FOLLOWED === 'ยังไม่ติดตาม').length;
+                document.getElementById('time-ref').innerText = '🔄 ข้อมูลอัปเดตล่าสุด: ' + new Date().toLocaleString('th-TH');
+
+                const getCounts = (key) => {
+                    const counts = {};
+                    data.forEach(d => { if(d[key]) counts[d[key]] = (counts[d[key]] || 0) + 1; });
+                    return counts;
+                };
+
+                // --- 1. Top 5 Diagnosis & Underlying ---
+                const renderRank = (id, key) => {
+                    const sorted = Object.entries(getCounts(key)).sort((a,b)=>b[1]-a[1]).slice(0,5);
+                    document.getElementById(id).innerHTML = sorted.map((item, i) => `
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                            <span class="text-sm font-bold text-slate-600"><span class="text-blue-500 mr-2">#${i+1}</span> ${item[0]}</span>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-black">${item[1]}</span>
+                        </div>
+                    `).join('');
+                };
+                renderRank('diag-list', 'DIAGNOSIS');
+                renderRank('under-list', 'UNDERLYING');
+
+                // --- 2. Create Pie Charts Helper ---
+                const createPie = (id, labels, values, colors) => {
+                    new Chart(document.getElementById(id), {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels,
+                            datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
+                        },
+                        options: { 
+                            maintainAspectRatio: false, 
+                            cutout: '75%', 
+                            plugins: { legend: { display: false } } 
+                        }
+                    });
+                };
+
+                // NAF Score
+                const naf = { 'Low': 0, 'Mid': 0, 'High': 0 };
+                data.forEach(d => { const s = parseInt(d.NAF_SCORE); if(s<=5) naf.Low++; else if(s<=10) naf.Mid++; else naf.High++; });
+                createPie('nafChart', Object.keys(naf), Object.values(naf), ['#10b981', '#f1c40f', '#ef4444']);
+
+                // Ward
+                const ward = getCounts('WARD');
+                createPie('wardChart', Object.keys(ward), Object.values(ward), ['#6366f1', '#a855f7', '#ec4899']);
+
+                // BMI
+                const bmi = { 'Under': 0, 'Normal': 0, 'Over': 0, 'Obese': 0 };
+                data.forEach(d => { const b = parseFloat(d.BMI); if(b<18.5) bmi.Under++; else if(b<23) bmi.Normal++; else if(b<25) bmi.Over++; else bmi.Obese++; });
+                createPie('bmiChart', Object.keys(bmi), Object.values(bmi), ['#fbbf24', '#10b981', '#3b82f6', '#f43f5e']);
+
+                // Albumin
+                const alb = { 'Normal': 0, 'Low': 0 };
+                data.forEach(d => { const a = parseFloat(d.ALBUMIN); if(a>=3.5) alb.Normal++; else if(a<3.5) alb.Low++; });
+                createPie('albChart', Object.keys(alb), Object.values(alb), ['#10b981', '#f43f5e']);
+
+                // Total Protein
+                const pro = { 'Normal': 0, 'Low': 0 };
+                data.forEach(d => { const p = parseFloat(d.TOTAL_PROTEIN); if(p>=6) pro.Normal++; else if(p<6) pro.Low++; });
+                createPie('proChart', Object.keys(pro), Object.values(pro), ['#3b82f6', '#f97316']);
+
+            } catch (error) { console.error(error); }
+        }
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
