@@ -6,174 +6,87 @@
     <title>Nutrition Care Plan Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f6; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f8fafb; }
+        .stat-card { transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); }
     </style>
 </head>
-<body class="bg-[#f4f7f6]">
+<body class="p-4 md:p-8">
 
-    <main class="max-w-[1600px] mx-auto p-4 md:p-8">
+    <div class="max-w-[1600px] mx-auto">
         
-        <header class="flex justify-between items-center mb-8 bg-white p-6 rounded-3xl shadow-sm">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 class="text-2xl font-black text-[#2c3e50] uppercase tracking-tighter">Nutrition Care Plan</h1>
-                <p id="time-display" class="text-slate-400 text-sm italic font-bold">Live Data Analysis Feed</p>
+                <h1 class="text-3xl font-black text-[#1e293b] tracking-tight uppercase">Nutrition Care Plan</h1>
+                <p id="update-time" class="text-slate-400 font-bold text-sm italic mt-1">Last Updated: Loading...</p>
             </div>
-            <div class="flex items-center gap-4">
-                <button onclick="location.reload()" class="bg-blue-50 text-blue-600 px-6 py-2 rounded-2xl font-bold border border-blue-100 hover:bg-blue-100 transition">🔄 Refresh Data</button>
-                <div class="bg-blue-600 text-white px-6 py-2 rounded-2xl font-bold shadow-lg shadow-blue-200 flex items-center gap-2">🥗 Nutrition Center</div>
+            <div class="flex gap-3">
+                <button onclick="location.reload()" class="bg-white border border-slate-200 px-6 py-2.5 rounded-2xl font-bold text-slate-600 shadow-sm hover:bg-slate-50 transition flex items-center gap-2">
+                    🔄 Refresh
+                </button>
+                <div class="bg-[#3b82f6] text-white px-6 py-2.5 rounded-2xl font-bold shadow-lg shadow-blue-100 flex items-center gap-2">
+                    🥗 Nutrition Center
+                </div>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-orange-400">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Patients</p>
-                <h2 id="total-pts" class="text-4xl font-black text-slate-700 mt-1">0</h2>
-                <div class="text-[10px] text-orange-500 font-bold mt-2">📊 ACTIVE CASES</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="stat-card bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-orange-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Total Patients</p>
+                <h2 id="total-pts" class="text-4xl font-black text-slate-800 mt-1">0</h2>
+                <div class="text-[10px] text-orange-500 font-bold mt-2 uppercase">● Active Cases</div>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-emerald-400">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Mean Albumin</p>
-                <h2 id="mean-albumin" class="text-4xl font-black text-slate-700 mt-1">0.0</h2>
-                <div class="text-[10px] text-emerald-500 font-bold mt-2">g/dL (AVERAGE)</div>
+            <div class="stat-card bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-emerald-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Avg. Albumin</p>
+                <h2 id="avg-albumin" class="text-4xl font-black text-slate-800 mt-1">0.0</h2>
+                <div class="text-[10px] text-emerald-500 font-bold mt-2 uppercase">g/dL (Average)</div>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-400">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Mean Total Protein</p>
-                <h2 id="mean-protein" class="text-4xl font-black text-slate-700 mt-1">0.0</h2>
-                <div class="text-[10px] text-blue-500 font-bold mt-2">g/dL (AVERAGE)</div>
+            <div class="stat-card bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-blue-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Avg. Total Protein</p>
+                <h2 id="avg-protein" class="text-4xl font-black text-slate-800 mt-1">0.0</h2>
+                <div class="text-[10px] text-blue-500 font-bold mt-2 uppercase">g/dL (Average)</div>
             </div>
-            <div class="bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-purple-400">
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Assessment Rate</p>
-                <h2 id="assess-rate" class="text-4xl font-black text-slate-700 mt-1">0%</h2>
-                <div class="text-[10px] text-purple-500 font-bold mt-2">COMPLETION STATUS</div>
+            <div class="stat-card bg-white p-6 rounded-[2rem] shadow-sm border-t-4 border-purple-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em]">Data Sync</p>
+                <h2 id="sync-rows" class="text-4xl font-black text-slate-800 mt-1">0</h2>
+                <div class="text-[10px] text-purple-500 font-bold mt-2 uppercase">Rows Loaded</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
             <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm">
-                <h3 class="font-black text-slate-700 uppercase mb-6 flex items-center gap-2 tracking-tighter">
-                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span> จำนวนผู้ป่วยแยกตามหอผู้ป่วย (Ward Distribution)
+                <h3 class="font-black text-slate-700 uppercase mb-8 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-blue-500 rounded-full"></span> จำนวนผู้ป่วยแยกตามหอผู้ป่วย
                 </h3>
                 <div class="h-[350px]"><canvas id="wardChart"></canvas></div>
             </div>
             <div class="bg-[#1abc9c] p-8 rounded-[2.5rem] shadow-xl text-white">
-                <h3 class="font-black text-white uppercase mb-6 border-b border-white/20 pb-4 tracking-tighter">NAF Risk Analysis</h3>
-                <div class="h-[300px]"><canvas id="nafChart"></canvas></div>
-                <div class="mt-4 text-center text-[10px] font-bold opacity-70 italic uppercase">Risk Level Distribution</div>
+                <h3 class="font-black text-white uppercase mb-8 border-b border-white/20 pb-4">BMI Summary</h3>
+                <div class="h-[300px] flex items-center justify-center"><canvas id="bmiChart"></canvas></div>
+                <div class="mt-6 text-center text-xs font-bold opacity-80 uppercase tracking-widest italic">Nutritional Distribution</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm">
-                <h3 class="font-black text-slate-700 uppercase mb-6 text-sm">🏆 Top 5 Diagnosis</h3>
-                <div class="h-[250px]"><canvas id="diagChart"></canvas></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-50">
+                <h3 class="font-black text-slate-700 uppercase mb-6 flex items-center gap-2">
+                    🏆 Top 5 Diagnosis (โรคหลัก)
+                </h3>
+                <div id="diag-list" class="space-y-4">
+                    </div>
             </div>
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm">
-                <h3 class="font-black text-slate-700 uppercase mb-6 text-sm">🏥 Top 5 Underlying</h3>
-                <div class="h-[250px]"><canvas id="underlyingChart"></canvas></div>
-            </div>
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border-2 border-slate-50">
-                <h3 class="font-black text-slate-700 uppercase mb-6 text-sm">⚖️ BMI Analysis</h3>
-                <div class="h-[250px]"><canvas id="bmiChart"></canvas></div>
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-50">
+                <h3 class="font-black text-slate-700 uppercase mb-6 flex items-center gap-2">
+                    🏥 Top 5 Underlying (โรคประจำตัว)
+                </h3>
+                <div id="under-list" class="space-y-4">
+                    </div>
             </div>
         </div>
 
-    </main>
+    </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
-
-        async function initDashboard() {
-            try {
-                const response = await fetch(APPS_SCRIPT_URL);
-                const result = await response.json();
-                if (result.status !== 'success') return;
-                const data = result.data;
-
-                // --- 1. วิเคราะห์ตัวเลข Stats ---
-                const albuminList = data.map(d => parseFloat(d.ALBUMIN)).filter(v => !isNaN(v));
-                const proteinList = data.map(d => parseFloat(d.TOTAL_PROTEIN)).filter(v => !isNaN(v));
-                const followedCount = data.filter(d => d.IS_FOLLOWED === 'ติดตามแล้ว').length;
-
-                document.getElementById('total-pts').innerText = data.length;
-                document.getElementById('mean-albumin').innerText = (albuminList.reduce((a,b)=>a+b,0) / albuminList.length || 0).toFixed(2);
-                document.getElementById('mean-protein').innerText = (proteinList.reduce((a,b)=>a+b,0) / proteinList.length || 0).toFixed(2);
-                document.getElementById('assess-rate').innerText = ((followedCount / data.length) * 100).toFixed(0) + '%';
-                document.getElementById('time-display').innerText = 'Last Updated: ' + new Date().toLocaleString();
-
-                // --- Helper: นับความถี่ข้อมูล ---
-                const countFreq = (key) => {
-                    const counts = {};
-                    data.forEach(d => { if(d[key]) counts[d[key]] = (counts[d[key]] || 0) + 1; });
-                    return counts;
-                };
-
-                // --- 2. กราฟ Wards (Horizontal Bar) ---
-                const wardData = countFreq('WARD');
-                new Chart(document.getElementById('wardChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: Object.keys(wardData),
-                        datasets: [{ label: 'ผู้ป่วย (คน)', data: Object.values(wardData), backgroundColor: '#3b82f6', borderRadius: 10 }]
-                    },
-                    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-
-                // --- 3. กราฟ NAF Risk (Doughnut) ---
-                const nafRisk = { 'Low': 0, 'Mid': 0, 'High': 0 };
-                data.forEach(d => {
-                    const s = parseInt(d.NAF_SCORE);
-                    if (s <= 5) nafRisk['Low']++; else if (s <= 10) nafRisk['Mid']++; else if (s > 10) nafRisk['High']++;
-                });
-                new Chart(document.getElementById('nafChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(nafRisk),
-                        datasets: [{ data: Object.values(nafRisk), backgroundColor: ['#f1c40f', '#ecf0f1', '#e74c3c'], borderWidth: 0 }]
-                    },
-                    options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } }
-                });
-
-                // --- 4. Top 5 Diagnosis ---
-                const diagData = Object.entries(countFreq('DIAGNOSIS')).sort((a,b) => b[1]-a[1]).slice(0,5);
-                new Chart(document.getElementById('diagChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: diagData.map(x => x[0]),
-                        datasets: [{ data: diagData.map(x => x[1]), backgroundColor: '#60a5fa', borderRadius: 8 }]
-                    },
-                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-
-                // --- 5. Top 5 Underlying ---
-                const underData = Object.entries(countFreq('UNDERLYING')).sort((a,b) => b[1]-a[1]).slice(0,5);
-                new Chart(document.getElementById('underlyingChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: underData.map(x => x[0]),
-                        datasets: [{ data: underData.map(x => x[1]), backgroundColor: '#fb923c', borderRadius: 8 }]
-                    },
-                    options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-
-                // --- 6. BMI Analysis ---
-                const bmiGroups = { 'Under': 0, 'Normal': 0, 'Over': 0, 'Obese': 0 };
-                data.forEach(d => {
-                    const b = parseFloat(d.BMI);
-                    if (b < 18.5) bmiGroups['Under']++; else if (b < 23) bmiGroups['Normal']++; else if (b < 25) bmiGroups['Over']++; else if (b >= 25) bmiGroups['Obese']++;
-                });
-                new Chart(document.getElementById('bmiChart'), {
-                    type: 'pie',
-                    data: {
-                        labels: Object.keys(bmiGroups),
-                        datasets: [{ data: Object.values(bmiGroups), backgroundColor: ['#fbbf24', '#10b981', '#3b82f6', '#ef4444'] }]
-                    },
-                    options: { maintainAspectRatio: false }
-                });
-
-            } catch (error) { console.error(error); }
-        }
-        window.onload = initDashboard;
-    </script>
-</body>
-</html>
+        const APPS_SCRIPT_URL = '
