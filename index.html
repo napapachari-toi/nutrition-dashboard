@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Nutrition Dashboard Live</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } = Recharts;
+
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
+
+        function Dashboard() {
+            const [data, setData] = useState([]);
+            const [loading, setLoading] = useState(true);
+
+            useEffect(() => {
+                fetch(APPS_SCRIPT_URL)
+                    .then(res => res.json())
+                    .then(result => {
+                        if (result.status === 'success') setData(result.data);
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error("Error:", err);
+                        setLoading(false);
+                    });
+            }, []);
+
+            if (loading) return <div className="p-20 text-center font-sans text-gray-500">กำลังดึงข้อมูลจาก Google Sheets...</div>;
+
+            return (
+                <div className="p-4 md:p-8 max-w-7xl mx-auto font-sans">
+                    <header className="bg-white p-6 rounded-2xl shadow-sm mb-6 border-l-8 border-blue-600 flex justify-between items-center">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800">📊 Nutrition Dashboard</h1>
+                            <p className="text-slate-500 text-sm">ข้อมูลจริงเชื่อมต่อกับ Google Sheets</p>
+                        </div>
+                        <button onClick={() => window.location.reload()} className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-200 transition">Refresh</button>
+                    </header>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* กราฟแท่งแสดง NAF Score ตามหัวตารางคุณ */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                            <h3 className="font-bold mb-6 text-slate-700">NAF Score รายบุคคล (HN)</h3>
+                            <div style={{ width: '100%', height: 350 }}>
+                                <ResponsiveContainer>
+                                    <BarChart data={data}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                        <XAxis dataKey="HN" tick={{fontSize: 12}} />
+                                        <YAxis />
+                                        <Tooltip cursor={{fill: '#f8fafc'}} />
+                                        <Bar dataKey="NAF_SCORE" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* กราฟวงกลมแสดง BMI */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                            <h3 className="font-bold mb-6 text-slate-700">สัดส่วนค่า BMI</h3>
+                            <div style={{ width: '100%', height: 350 }}>
+                                <ResponsiveContainer>
+                                    <PieChart>
+                                        <Pie data={data} dataKey="BMI" nameKey="HN" cx="50%" cy="50%" outerRadius={100} fill="#10b981" label />
+                                        <Tooltip />
+                                        <Legend />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
+    </script>
+</body>
+</html>
