@@ -3,70 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition Dashboard Full Version</title>
+    <title>Nutrition Professional Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Sarabun', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #f4f7f6; }
+        .sidebar-item:hover { background-color: rgba(255,255,255,0.1); border-radius: 12px; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-[#f8fafc]">
+<body class="flex min-h-screen">
 
-    <div class="max-w-[1400px] mx-auto p-4 md:p-8">
-        <div class="bg-white p-6 rounded-3xl shadow-sm mb-8 border-l-[12px] border-blue-600 flex flex-col md:flex-row justify-between items-center shadow-lg shadow-blue-100/50">
+    <aside class="w-20 md:w-64 bg-[#2c3e50] text-white flex flex-col p-4 shadow-xl hidden md:flex">
+        <div class="p-4 mb-10 text-center">
+            <div class="bg-white p-2 rounded-2xl inline-block text-2xl">🏔️</div>
+            <h2 class="mt-4 font-bold hidden md:block tracking-widest uppercase text-xs opacity-50">Main Menu</h2>
+        </div>
+        <nav class="flex-1 space-y-4 text-sm font-medium">
+            <div class="sidebar-item p-4 cursor-pointer flex items-center gap-4 bg-blue-600 rounded-xl shadow-lg">📊 <span>Dashboard</span></div>
+            <div class="sidebar-item p-4 cursor-pointer flex items-center gap-4 opacity-60">👥 <span>Patients</span></div>
+            <div class="sidebar-item p-4 cursor-pointer flex items-center gap-4 opacity-60">📄 <span>Reports</span></div>
+            <div class="sidebar-item p-4 cursor-pointer flex items-center gap-4 opacity-60">⚙️ <span>Settings</span></div>
+        </nav>
+        <div class="p-4 border-t border-white/10 text-xs opacity-40">System v2.5</div>
+    </aside>
+
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+        
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800 uppercase italic">Statistics Overview</h1>
+                <p id="time-display" class="text-slate-400 text-sm italic font-bold">Live Data Feed</p>
+            </div>
             <div class="flex items-center gap-4">
-                <div class="text-4xl">🥗</div>
-                <div>
-                    <h1 class="text-3xl font-black text-slate-800 tracking-tight">Nutrition Care Dashboard</h1>
-                    <p id="status-text" class="text-emerald-500 font-medium flex items-center gap-2">
-                        <span class="relative flex h-3 w-3"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
-                        เชื่อมต่อข้อมูลสดจาก Google Sheets แล้ว
-                    </p>
-                </div>
+                <button onclick="location.reload()" class="bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition">🔄 Refresh</button>
+                <div class="bg-blue-600 text-white p-3 rounded-xl font-bold shadow-lg shadow-blue-200">🥗 Nutrition Center</div>
             </div>
-            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-blue-200">
-                🔄 อัปเดตข้อมูลใหม่
-            </button>
-        </div>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-700 p-8 rounded-[2rem] text-white shadow-xl shadow-blue-200 relative overflow-hidden">
-                <div class="relative z-10">
-                    <p class="text-blue-100 font-bold uppercase tracking-wider text-sm">ผู้ป่วยในระบบทั้งหมด</p>
-                    <h2 id="total-pts" class="text-6xl font-black mt-2">0</h2>
-                </div>
-                <div class="absolute -right-4 -bottom-4 text-8xl opacity-10 font-black">PTS</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-orange-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Patients</p>
+                <h2 id="total-pts" class="text-3xl font-black text-slate-700 mt-1">0</h2>
+                <div class="text-[10px] text-orange-500 font-bold mt-2">📊 ACTIVE CASE</div>
             </div>
-            <div class="bg-gradient-to-br from-emerald-400 to-emerald-600 p-8 rounded-[2rem] text-white shadow-xl shadow-emerald-200 relative overflow-hidden">
-                <div class="relative z-10">
-                    <p class="text-emerald-50 font-bold uppercase tracking-wider text-sm">ได้รับการติดตามแล้ว</p>
-                    <h2 id="followed-pts" class="text-6xl font-black mt-2">0</h2>
-                </div>
-                <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">✓</div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-emerald-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Completed</p>
+                <h2 id="followed-pts" class="text-3xl font-black text-slate-700 mt-1">0</h2>
+                <div class="text-[10px] text-emerald-500 font-bold mt-2">+10% GROWTH</div>
             </div>
-            <div class="bg-gradient-to-br from-amber-400 to-amber-600 p-8 rounded-[2rem] text-white shadow-xl shadow-amber-200 relative overflow-hidden">
-                <div class="relative z-10">
-                    <p class="text-amber-50 font-bold uppercase tracking-wider text-sm">ยังไม่ได้ดำเนินการ</p>
-                    <h2 id="pending-pts" class="text-6xl font-black mt-2">0</h2>
-                </div>
-                <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">!</div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-blue-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Pending Assessment</p>
+                <h2 id="pending-pts" class="text-3xl font-black text-slate-700 mt-1">0</h2>
+                <div class="text-[10px] text-blue-500 font-bold mt-2">WAITING LIST</div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border-t-4 border-purple-400">
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Total Data Rows</p>
+                <h2 id="row-count" class="text-3xl font-black text-slate-700 mt-1">0</h2>
+                <div class="text-[10px] text-purple-500 font-bold mt-2">SYNCED SUCCESS</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <h3 class="text-xl font-black text-slate-700 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-8 bg-blue-500 rounded-full"></span> คะแนน NAF Score รายคน
-                </h3>
-                <div class="h-[400px]"><canvas id="nafChart"></canvas></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+            <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm relative overflow-hidden">
+                <div class="flex justify-between items-center mb-8 border-b pb-4">
+                    <h3 class="font-black text-slate-700 uppercase tracking-tighter">NAF Risk Analysis</h3>
+                    <div class="flex gap-2 text-[10px] font-bold italic text-slate-300">SUMMARY DATA</div>
+                </div>
+                <div class="h-[350px]"><canvas id="nafAnalysisChart"></canvas></div>
             </div>
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <h3 class="text-xl font-black text-slate-700 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-8 bg-emerald-500 rounded-full"></span> สัดส่วนช่วง BMI (Nutritional Status)
-                </h3>
-                <div class="h-[400px] flex items-center justify-center"><canvas id="bmiChart"></canvas></div>
+            <div class="bg-[#1abc9c] p-8 rounded-[2rem] shadow-xl text-white">
+                <h3 class="font-black text-white uppercase tracking-tighter mb-8 border-b border-white/20 pb-4">BMI Summary</h3>
+                <div class="h-[300px] flex items-center justify-center"><canvas id="bmiAnalysisChart"></canvas></div>
+                <div class="mt-4 text-center text-[10px] font-bold opacity-70">NUTRITIONAL STATUS DISTRIBUTION</div>
             </div>
         </div>
-    </div>
+
+    </main>
 
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
@@ -78,65 +92,68 @@
                 
                 if (result.status === 'success') {
                     const data = result.data;
-                    
-                    // อัปเดตตัวเลข
                     document.getElementById('total-pts').innerText = data.length;
+                    document.getElementById('row-count').innerText = data.length;
                     document.getElementById('followed-pts').innerText = data.filter(d => d.IS_FOLLOWED === 'ติดตามแล้ว').length;
                     document.getElementById('pending-pts').innerText = data.filter(d => d.IS_FOLLOWED === 'ยังไม่ติดตาม').length;
+                    document.getElementById('time-display').innerText = 'Last Updated: ' + new Date().toLocaleTimeString();
 
-                    // กราฟ NAF Score
-                    new Chart(document.getElementById('nafChart'), {
-                        type: 'bar',
-                        data: {
-                            labels: data.slice(0, 15).map(d => 'HN ' + d.HN), // แสดงแค่ 15 คนแรกเพื่อความสวยงาม
-                            datasets: [{
-                                label: 'คะแนน NAF',
-                                data: data.slice(0, 15).map(d => d.NAF_SCORE),
-                                backgroundColor: '#3b82f6',
-                                borderRadius: 12,
-                                hoverBackgroundColor: '#1d4ed8'
-                            }]
-                        },
-                        options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false } },
-                            scales: { y: { beginAtZero: true, grid: { display: false } } }
-                        }
-                    });
-
-                    // กราฟ BMI
-                    const bmiCat = { 'Underweight': 0, 'Normal': 0, 'Overweight': 0, 'Obese': 0 };
+                    // 1. วิเคราะห์ NAF Score (คะแนนสรุปตามกลุ่ม)
+                    const nafGroups = { 'Risk Low': 0, 'Risk Mid': 0, 'Risk High': 0 };
                     data.forEach(d => {
-                        const bmi = parseFloat(d.BMI);
-                        if (bmi < 18.5) bmiCat['Underweight']++;
-                        else if (bmi < 23) bmiCat['Normal']++;
-                        else if (bmi < 25) bmiCat['Overweight']++;
-                        else bmiCat['Obese']++;
+                        const score = parseInt(d.NAF_SCORE) || 0;
+                        if (score <= 5) nafGroups['Risk Low']++;
+                        else if (score <= 10) nafGroups['Risk Mid']++;
+                        else if (score > 10) nafGroups['Risk High']++;
                     });
 
-                    new Chart(document.getElementById('bmiChart'), {
-                        type: 'doughnut', // ใช้กราฟโดนัทเพื่อให้ดูทันสมัยขึ้น
+                    new Chart(document.getElementById('nafAnalysisChart'), {
+                        type: 'line', // ปรับเป็นกราฟเส้นให้เหมือนรูป Visitors ของคุณ
                         data: {
-                            labels: Object.keys(bmiCat),
+                            labels: Object.keys(nafGroups),
                             datasets: [{
-                                data: Object.values(bmiCat),
-                                backgroundColor: ['#fbbf24', '#10b981', '#3b82f6', '#ef4444'],
-                                borderWidth: 0,
-                                hoverOffset: 20
+                                label: 'Patients Count',
+                                data: Object.values(nafGroups),
+                                borderColor: '#ff7675',
+                                backgroundColor: 'rgba(255, 118, 117, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 6,
+                                pointBackgroundColor: '#ff7675'
                             }]
                         },
                         options: { 
-                            responsive: true, 
-                            maintainAspectRatio: false,
-                            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } } },
-                            cutout: '70%'
+                            maintainAspectRatio: false, 
+                            plugins: { legend: { display: false } },
+                            scales: { y: { grid: { display: false } } }
                         }
+                    });
+
+                    // 2. วิเคราะห์ BMI (แบบกราฟโดนัทให้เหมือนรูป Visitors ของคุณ)
+                    const bmiGroups = { 'Under': 0, 'Normal': 0, 'Obese': 0 };
+                    data.forEach(d => {
+                        const bmi = parseFloat(d.BMI) || 0;
+                        if (bmi > 0) {
+                            if (bmi < 18.5) bmiGroups['Under']++;
+                            else if (bmi < 23) bmiGroups['Normal']++;
+                            else bmiGroups['Obese']++;
+                        }
+                    });
+
+                    new Chart(document.getElementById('bmiAnalysisChart'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(bmiGroups),
+                            datasets: [{
+                                data: Object.values(bmiGroups),
+                                backgroundColor: ['#f1c40f', '#ecf0f1', '#e74c3c'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: { maintainAspectRatio: false, cutout: '80%', plugins: { legend: { position: 'bottom', labels: { color: 'white' } } } }
                     });
                 }
-            } catch (error) {
-                console.error(error);
-            }
+            } catch (error) { console.error(error); }
         }
         window.onload = initDashboard;
     </script>
