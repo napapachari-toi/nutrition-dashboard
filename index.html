@@ -3,160 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nutrition Care Plan Dashboard - Final</title>
+    <title>Nutrition Modern Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Sarabun', sans-serif; background-color: #f3f4f6; }
-        .stat-card { border-radius: 1.5rem; transition: transform 0.2s; }
-        .stat-card:hover { transform: scale(1.02); }
-        .chart-container { position: relative; height: 200px; width: 100%; }
-        .list-item { border-left: 5px solid #3b82f6; background: #ffffff; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f0f2f5; }
+        .card { background: white; border-radius: 1.5rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-5px); shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        canvas { max-height: 280px !important; }
     </style>
 </head>
-<body class="p-4 lg:p-10">
+<body class="p-4 md:p-8">
 
     <div class="max-w-[1500px] mx-auto">
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="stat-card p-8 bg-gradient-to-br from-cyan-400 to-blue-500 text-white shadow-lg text-center">
-                <h3 class="text-6xl font-black" id="total-all">0</h3>
-                <p class="text-lg font-bold mt-2">ผู้ป่วยทั้งหมด</p>
-            </div>
-            <div class="stat-card p-8 bg-gradient-to-br from-emerald-400 to-teal-500 text-white shadow-lg text-center">
-                <h3 class="text-6xl font-black" id="total-done">0</h3>
-                <p class="text-lg font-bold mt-2">ติดตามแล้ว</p>
-            </div>
-            <div class="stat-card p-8 bg-gradient-to-br from-rose-400 to-orange-500 text-white shadow-lg text-center">
-                <h3 class="text-6xl font-black" id="total-pending">0</h3>
-                <p class="text-lg font-bold mt-2">ต้องติดตาม</p>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
-                <h3 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="text-2xl">🏆</span> Top 5 Diagnosis (โรคหลัก)
-                </h3>
-                <div id="diag-list" class="space-y-3">
-                    </div>
+        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4 bg-white p-6 rounded-[2rem] shadow-sm border-l-[12px] border-blue-600">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">NUTRITION CARE PLAN <span class="text-blue-600">DASHBOARD</span></h1>
+                <p id="update-time" class="text-slate-400 font-bold text-sm mt-1 uppercase italic">Loading real-time data...</p>
             </div>
-            <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
-                <h3 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="text-2xl">🏥</span> Top 5 โรคประจำตัว
-                </h3>
-                <div id="under-list" class="space-y-3">
-                    </div>
-            </div>
-        </div>
+            <button onclick="location.reload()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-blue-200 transition-all flex items-center gap-2">
+                🔄 UPDATE DASHBOARD
+            </button>
+        </header>
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+    <div class="card p-6 bg-gradient-to-br from-blue-400 to-blue-600 text-white hover:shadow-2xl">
+        <h2 id="totalPatients" class="text-5xl font-black mb-2">0</h2>
+        <p class="text-blue-100 font-bold text-lg text-center">ผู้ป่วยทั้งหมด</p>
+    </div>
+    <div class="card p-6 bg-gradient-to-br from-green-400 to-green-600 text-white hover:shadow-2xl">
+        <h2 id="pending" class="text-5xl font-black mb-2">0</h2>
+        <p class="text-green-100 font-bold text-lg text-center">ต้องติดตาม</p>
+    </div>
+    <div class="card p-6 bg-gradient-to-br from-pink-400 via-orange-400 to-yellow-400 text-white hover:shadow-2xl">
+        <h2 id="followedUp" class="text-5xl font-black mb-2">0</h2>
+        <p class="text-white font-bold text-lg text-center drop-shadow-lg">ติดตามแล้ว</p>
+    </div>
+</div>        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+    <div class="card p-8">
+        <h3 class="text-xl font-black text-blue-600 mb-6 flex items-center gap-2">🏆 Top 5 Diagnosis (โรคหลัก)</h3>
+        <div id="diagList" class="space-y-3"></div>
+    </div>
+    <div class="card p-8">
+        <h3 class="text-xl font-black text-blue-600 mb-6 flex items-center gap-2">🏥 Top 5 โรคประจำตัว</h3>
+        <div id="underList" class="space-y-3"></div>
+    </div>
+</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                <h4 class="font-bold text-slate-500 mb-4 uppercase text-xs tracking-widest">NAF Score</h4>
-                <div class="chart-container"><canvas id="nafChart"></canvas></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="card p-6">
+                <h4 class="text-center font-bold text-slate-500 mb-4 uppercase tracking-widest text-xs">NAF RISK LEVEL</h4>
+                <canvas id="nafPolarChart"></canvas>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                <h4 class="font-bold text-slate-500 mb-4 uppercase text-xs tracking-widest">แยกตามหอผู้ป่วย</h4>
-                <div class="chart-container"><canvas id="wardChart"></canvas></div>
+            <div class="card p-6">
+                <h4 class="text-center font-bold text-slate-500 mb-4 uppercase tracking-widest text-xs">WARD DISTRIBUTION</h4>
+                <canvas id="wardDoughnutChart"></canvas>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                <h4 class="font-bold text-slate-500 mb-4 uppercase text-xs tracking-widest">สัดส่วนค่า BMI</h4>
-                <div class="chart-container"><canvas id="bmiChart"></canvas></div>
+            <div class="card p-6">
+                <h4 class="text-center font-bold text-slate-500 mb-4 uppercase tracking-widest text-xs">BMI ANALYSIS</h4>
+                <canvas id="bmiPieChart"></canvas>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                <h4 class="font-bold text-blue-600 mb-4 uppercase text-xs tracking-widest italic">ค่า Albumin</h4>
-                <div class="chart-container"><canvas id="albChart"></canvas></div>
-            </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm text-center">
-                <h4 class="font-bold text-emerald-600 mb-4 uppercase text-xs tracking-widest italic">Total Protein</h4>
-                <div class="chart-container"><canvas id="proChart"></canvas></div>
-            </div>
+            <div class="card p-6">
+    <h4 class="text-center font-bold text-slate-500 mb-4 uppercase tracking-widest text-xs">ALBUMIN LEVEL</h4>
+    <canvas id="albuminChart"></canvas>
+</div>
+<div class="card p-6">
+    <h4 class="text-center font-bold text-slate-500 mb-4 uppercase tracking-widest text-xs">TOTAL PROTEIN LEVEL</h4>
+    <canvas id="proteinChart"></canvas>
+</div>
         </div>
     </div>
 
-    <script>
+   <script>
         Chart.register(ChartDataLabels);
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
 
-        async function init() {
+        async function initDashboard() {
             try {
-                const res = await fetch(APPS_SCRIPT_URL);
-                const result = await res.json();
+                const response = await fetch(APPS_SCRIPT_URL);
+                const result = await response.json();
+                if (result.status !== 'success') return;
                 const data = result.data;
 
-                // สรุปตัวเลข (รูป 4)
-                document.getElementById('total-all').innerText = data.length;
-                document.getElementById('total-done').innerText = data.filter(d => d.IS_FOLLOWED === 'ติดตามแล้ว').length;
-                document.getElementById('total-pending').innerText = data.filter(d => d.IS_FOLLOWED === 'ยังไม่ติดตาม').length;
+                document.getElementById('update-time').innerText = 'LAST UPDATED: ' + new Date().toLocaleString('th-TH');
 
-                // จัดการ Top 5 (รูป 3)
-                const renderTop5 = (id, key) => {
+                // 1. Statistics Summary
+                const totalPatients = data.length; 
+
+// 1. คำนวณ "ต้องติดตาม" (นับเฉพาะคนที่มี NAF_SCORE ตั้งแต่ 6 ขึ้นไป)
+const pending = data.filter(d => {
+    const score = parseInt(d.NAF_SCORE);
+    return score >= 6; // เอาเฉพาะคะแนน 6 ขึ้นไป (ไม่เอา < 6 และไม่เอา 0)
+}).length; // ค่านี้จะได้ 51 ตามที่คุณระบุ
+
+// 2. นับคนที่ "ติดตามแล้ว" (เช็คจากคนที่มีผลการติดตามในช่อง FOLLOW_UP_RESULT)
+const followedUp = data.filter(d => d.FOLLOW_UP_RESULT && d.FOLLOW_UP_RESULT.toString().trim() !== '').length; 
+
+// 3. ส่งค่าไปแสดงผลที่หน้าจอ
+document.getElementById('totalPatients').innerText = totalPatients;
+document.getElementById('pending').innerText = pending;
+document.getElementById('followedUp').innerText = followedUp;
+                // Helper for frequency
+                const getFreq = (key) => {
                     const counts = {};
                     data.forEach(d => { if(d[key]) counts[d[key]] = (counts[d[key]] || 0) + 1; });
-                    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,5);
-                    
-                    document.getElementById(id).innerHTML = sorted.map((item, i) => `
-                        <div class="list-item flex justify-between items-center p-4 rounded-xl shadow-sm hover:bg-blue-50 transition">
-                            <span class="font-bold text-slate-700 text-sm">#${i+1} ${item[0]}</span>
-                            <span class="bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-black shadow-md">${item[1]}</span>
-                        </div>
-                    `).join('');
+                    return counts;
                 };
-                renderTop5('diag-list', 'DIAGNOSIS');
-                renderTop5('under-list', 'UNDERLYING');
 
-                // ฟังก์ชันสร้างกราฟ
-                const createPie = (id, labels, values, colors) => {
+                // Helper for common charts
+                const setupChart = (id, type, labels, values, colors) => {
                     const total = values.reduce((a, b) => a + b, 0);
-                    new Chart(document.getElementById(id), {
-                        type: 'doughnut',
+                    return new Chart(document.getElementById(id), {
+                        type: type,
                         data: {
                             labels: labels,
                             datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }]
                         },
                         options: {
                             maintainAspectRatio: false,
-                            cutout: '70%',
                             plugins: {
                                 legend: { display: false },
                                 datalabels: {
-                                    color: '#fff', font: { weight: 'bold', size: 10 },
-                                    formatter: (v) => v > 0 ? `${v}\n(${(v/total*100).toFixed(0)}%)` : ''
+                                    color: '#fff',
+                                    font: { weight: 'bold', size: 10 },
+                                    formatter: (val) => val > 0 ? `${val}\n(${(val/total*100).toFixed(0)}%)` : ''
                                 }
                             }
                         }
                     });
                 };
 
-                // 1. NAF Score
-                const naf = { 'ปกติ':0, 'เสี่ยงต่ำ':0, 'เสี่ยงสูง':0 };
-                data.forEach(d => { const s = parseInt(d.NAF_SCORE); if(s<=5) naf['ปกติ']++; else if(s<=10) naf['เสี่ยงต่ำ']++; else naf['เสี่ยงสูง']++; });
-                createPie('nafChart', Object.keys(naf), Object.values(naf), ['#10b981', '#fbbf24', '#ef4444']);
+                // 1. TOP 5 DIAGNOSIS (List)
+const diagFreq = Object.entries(getFreq('MAIN_DIAGNOSIS')).sort((a,b)=>b[1]-a[1]).slice(0,5);
+const diagListEl = document.getElementById('diagList');
+if (diagListEl) {
+    if (diagFreq.length > 0) {
+        diagListEl.innerHTML = diagFreq.map((item, idx) => `
+            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-white rounded-xl border-l-4 border-blue-500 hover:shadow-md transition-all">
+                <div class="flex items-center gap-3">
+                    <span class="text-blue-600 font-black text-lg">#${idx+1}</span>
+                    <span class="text-slate-800 font-medium">${item[0]}</span>
+                </div>
+                <span class="bg-blue-600 text-white px-4 py-2 rounded-full font-bold text-sm">${item[1]}</span>
+            </div>
+        `).join('');
+    } else {
+        diagListEl.innerHTML = '<p class="text-center text-gray-500 py-8">ไม่มีข้อมูล</p>';
+    }
+}
 
-                // 2. Ward
-                const w = {}; data.forEach(d => { if(d.WARD) w[d.WARD] = (w[d.WARD] || 0) + 1; });
-                createPie('wardChart', Object.keys(w), Object.values(w), ['#6366f1', '#a855f7', '#ec4899', '#3b82f6']);
+// 2. TOP 5 UNDERLYING (List)
+const underFreq = Object.entries(getFreq('CHRONIC_DISEASES')).sort((a,b)=>b[1]-a[1]).slice(0,5);const underListEl = document.getElementById('underList');
+if (underListEl) {
+    if (underFreq.length > 0) {
+        underListEl.innerHTML = underFreq.map((item, idx) => `
+            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-white rounded-xl border-l-4 border-purple-500 hover:shadow-md transition-all">
+                <div class="flex items-center gap-3">
+                    <span class="text-purple-600 font-black text-lg">#${idx+1}</span>
+                    <span class="text-slate-800 font-medium">${item[0]}</span>
+                </div>
+                <span class="bg-purple-600 text-white px-4 py-2 rounded-full font-bold text-sm">${item[1]}</span>
+            </div>
+        `).join('');
+    } else {
+        underListEl.innerHTML = '<p class="text-center text-gray-500 py-8">ไม่มีข้อมูล</p>';
+    }
+}
 
-                // 3. BMI
-                const bmi = { 'ผอม':0, 'ปกติ':0, 'เกิน':0, 'อ้วน':0 };
-                data.forEach(d => { const b = parseFloat(d.BMI); if(b<18.5) bmi['ผอม']++; else if(b<23) bmi['ปกติ']++; else if(b<25) bmi['เกิน']++; else bmi['อ้วน']++; });
-                createPie('bmiChart', Object.keys(bmi), Object.values(bmi), ['#fbbf24', '#10b981', '#3b82f6', '#f43f5e']);
+                // 3. NAF Score (Polar Area)
+                const naf = { 'Low': 0, 'Mid': 0, 'High': 0 };
+                data.forEach(d => { 
+                    const s = parseInt(d.NAF_SCORE);
+                    if(s<=5) naf.Low++; else if(s<=10) naf.Mid++; else naf.High++;
+                });
+                setupChart('nafPolarChart', 'polarArea', Object.keys(naf), Object.values(naf), ['#10b981', '#fbbf24', '#ef4444']);
 
-                // 4. Albumin (แยกกราฟ - รูป 1)
-                const alb = { 'ปกติ (>=3.5)': 0, 'ต่ำ (<3.5)': 0 };
-                data.forEach(d => { if(parseFloat(d.ALBUMIN) >= 3.5) alb['ปกติ (>=3.5)']++; else alb['ต่ำ (<3.5)']++; });
-                createPie('albChart', Object.keys(alb), Object.values(alb), ['#3b82f6', '#94a3b8']);
+                // 4. Ward (Doughnut)
+                const w = getFreq('WARD');
+                setupChart('wardDoughnutChart', 'doughnut', Object.keys(w), Object.values(w), ['#6366f1', '#a855f7', '#ec4899', '#8b5cf6']);
 
-                // 5. Total Protein (แยกกราฟ - รูป 1)
-                const pro = { 'ปกติ (>=6)': 0, 'ต่ำ (<6)': 0 };
-                data.forEach(d => { if(parseFloat(d.TOTAL_PROTEIN) >= 6) pro['ปกติ (>=6)']++; else pro['ต่ำ (<6)']++; });
-                createPie('proChart', Object.keys(pro), Object.values(pro), ['#10b981', '#94a3b8']);
+                // 5. BMI (Pie)
+                const bmi = { 'Under': 0, 'Normal': 0, 'Over': 0, 'Obese': 0 };
+                data.forEach(d => {
+                    const b = parseFloat(d.BMI);
+                    if(b<18.5) bmi.Under++; else if(b<23) bmi.Normal++; else if(b<25) bmi.Over++; else bmi.Obese++;
+                });
+                setupChart('bmiPieChart', 'pie', Object.keys(bmi), Object.values(bmi), ['#fcd34d', '#10b981', '#3b82f6', '#f43f5e']);
 
-            } catch (e) { console.error(e); }
+                // 6. Albumin Chart (Separate)
+const alb = { ok: 0, low: 0 };
+data.forEach(d => {
+    if(parseFloat(d.ALBUMIN) >= 3.5) alb.ok++; else alb.low++;
+});
+setupChart('albuminChart', 'doughnut', ['ปกติ', 'ต่ำ'], [alb.ok, alb.low], ['#10b981', '#ef4444']);
+
+// 7. Total Protein Chart (Separate)
+const pro = { ok: 0, low: 0 };
+data.forEach(d => {
+    if(parseFloat(d.TOTAL_PROTEIN) >= 6) pro.ok++; else pro.low++;
+});
+setupChart('proteinChart', 'doughnut', ['ปกติ', 'ต่ำ'], [pro.ok, pro.low], ['#10b981', '#ef4444']);
+
+            } catch (e) { console.error("Error:", e); }
         }
-        window.onload = init;
+        window.onload = initDashboard;
     </script>
 </body>
 </html>
