@@ -146,7 +146,7 @@
 
    <script>
         Chart.register(ChartDataLabels);
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzb0vJookz5QBCMgmIsoA7XTwOZrdi1T-JI4_c4voSJeF5WkLIlazamGxJygGxP4j9y/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbysuexIp4jKK95gvIx3gSiBmpKLKT91iH_xWjAc_RUo5R7qzN3MLOvk0ijkT9y8MlM/exec';
 
         let allData = []; // เก็บข้อมูลทั้งหมด
 
@@ -214,18 +214,26 @@ function applyFilters() {
     renderDashboard(filtered);
 }
 
-async function initDashboard() {
-    try {
-        const response = await fetch(APPS_SCRIPT_URL);
-        const result = await response.json();
-        if (result.status !== 'success') return;
-        allData = result.data;
-        
-        populateWardFilter(allData);
-        renderDashboard(allData);
-    } catch (e) { console.error("Error:", e); }
+// ✅ JSONP callback — Apps Script จะเรียกฟังก์ชันนี้
+function handleData(result) {
+    if (!result || result.status !== 'success') {
+        document.getElementById('update-time').innerText = '❌ โหลดข้อมูลไม่สำเร็จ';
+        return;
+    }
+    allData = result.data;
+    populateWardFilter(allData);
+    renderDashboard(allData);
 }
 
+// ✅ โหลดด้วย JSONP แทน fetch (แก้ CORS)
+function initDashboard() {
+    const script = document.createElement('script');
+    script.src = APPS_SCRIPT_URL + '?action=getData&callback=handleData';
+    script.onerror = function() {
+        document.getElementById('update-time').innerText = '❌ เชื่อมต่อไม่ได้';
+    };
+    document.body.appendChild(script);
+}
 let allCharts = {}; // เก็บ chart instances
 
 function renderDashboard(data) {
